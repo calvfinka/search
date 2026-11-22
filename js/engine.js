@@ -12,13 +12,14 @@ const PAGES=[
  ["Ajukan event atau open trip","id/ajukan","Kirim event untuk ditinjau admin","ajukan submit tambah event"],
  ["Bantuan dan FAQ","id/bantuan","Pertanyaan umum dan kontak","bantuan faq kontak"]
 ];
+const abs=u=>!u?"":/^https?:\/\//i.test(u)?u:C.SITE+"/"+String(u).replace(/^\/+/,"");
 function build(events,posts){
  const d=[];const site=C.SITE;
  (events||[]).filter(e=>!e.status||e.status==="published").forEach(e=>{
   const city=typeof e.city==="object"&&e.city?e.city.name:(e.city||"");
   const hike=e.category==="naikgunung";
   d.push({type:hike?"gunung":"event",cat:e.category,title:e.title,
-   desc:e.description||"",url:`${site}/id/e/${e.slug}`,img:e.poster_url||"",
+   desc:e.description||"",url:`${site}/id/e/${e.slug}`,img:abs(e.poster_url),
    date:e.event_date||"",end:e.end_date||"",meta:[city,e.venue,e.price_label,e.mountain,e.altitude_mdpl?e.altitude_mdpl+" mdpl":"",e.difficulty].filter(Boolean),
    extra:[e.genre,e.lineup,e.organizer,e.mountain,e.title_en,city,e.category].filter(Boolean).join(" "),boost:+e.boost_score||0});
  });

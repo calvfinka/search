@@ -1,8 +1,8 @@
 (function(){
 const C=window.SX_CONFIG,$=id=>document.getElementById(id),D=$("drawer");
-const TABS=[["all","Semua"],["event","Event"],["gunung","Gunung"],["blog","Blog"],["page","Halaman"]];
+const TABS=[["ai","AI"],["all","Semua"],["event","Event"],["gunung","Gunung"],["blog","Blog"],["page","Halaman"]];
 const LABEL={event:"Event",gunung:"Gunung",blog:"Blog",page:"Halaman"};
-let q="",tab="all",shown=0,results=[],reqId=0;
+let q="",tab="ai",shown=0,results=[],reqId=0;
 const esc=s=>(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=d=>d?new Date(d+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"}):"";
 function hl(t,terms){let o=esc(t);terms.filter(w=>w.length>1).forEach(w=>{try{o=o.replace(new RegExp("(?<![\\p{L}\\p{N}])("+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","giu"),"<mark>$1</mark>")}catch(_){}});return o}
@@ -53,10 +53,10 @@ $("newBtn").addEventListener("click",fresh);$("newBtn2").addEventListener("click
 $("logo").addEventListener("click",e=>{if(e.metaKey||e.ctrlKey||e.shiftKey)return;e.preventDefault();fresh()});
 
 /* ---------- rute ---------- */
-function go(query,t){const u=new URL(location.href);u.search="";if(query){u.searchParams.set("q",query);pushH(query)}if(t&&t!=="all")u.searchParams.set("tab",t);
+function go(query,t){const u=new URL(location.href);u.search="";if(query){u.searchParams.set("q",query);pushH(query)}if(t&&t!=="ai")u.searchParams.set("tab",t);
  history.pushState(null,"",u);route()}
 async function route(){
- const my=++reqId,p=new URLSearchParams(location.search);q=(p.get("q")||"").trim();tab=p.get("tab")||"all";
+ const my=++reqId,p=new URLSearchParams(location.search);q=(p.get("q")||"").trim();tab=p.get("tab")||"ai";if(!TABS.some(x=>x[0]===tab))tab="ai";
  const home=!q;$("main").hidden=!home;$("res").hidden=home;$("fSm").hidden=home;document.body.classList.toggle("in-res",!home);
  document.title=q?q+" — GWM Search":"GWM Search — cari konser, festival, gunung, dan blog";
  window.scrollTo(0,0);
@@ -65,14 +65,60 @@ async function route(){
  await SX.load();if(my!==reqId)return;
  const all=SX.search(q,"all"),terms=SX.terms(q),it=SX.intent(q);
  const cnt={all:all.length};all.forEach(d=>cnt[d.type]=(cnt[d.type]||0)+1);
- $("tabs").innerHTML=TABS.map(([k,l])=>`<button role="tab" data-k="${k}" aria-selected="${k===tab}">${l}<small>${cnt[k]||0}</small></button>`).join("");
+ $("tabs").innerHTML=TABS.map(([k,l])=>`<button role="tab" data-k="${k}" aria-selected="${k===tab}">${l}${k==="ai"?"":`<small>${cnt[k]||0}</small>`}</button>`).join("");
+ const isAI=tab==="ai";
+ $("ai").hidden=!isAI;["cnt","list"].forEach(id=>$(id).hidden=isAI);$("more").hidden=true;
+ if(isAI){$("cnt").textContent="";$("list").innerHTML="";shown=0;return renderAI(my,all)}
  results=tab==="all"?all:all.filter(d=>d.type===tab);shown=0;$("list").innerHTML="";
  const per=it.from?` · ${fmt(it.from)}${it.to&&it.to!==it.from?" – "+fmt(it.to):" dan seterusnya"}, urut tanggal`:"";
  $("cnt").textContent=results.length?`${results.length} hasil${per}`:"";
- const a=$("ans");a.hidden=true;
- if(!results.length){$("list").innerHTML=`<li class="empty">Tidak ada hasil untuk “${esc(q)}”.<br>Coba kata yang lebih umum atau pilih kategori Semua.</li>`;$("more").hidden=true;return}
+ if(!results.length){$("list").innerHTML=`<li class="empty">Tidak ada hasil untuk “${esc(q)}”.<br>Coba kata yang lebih umum atau pilih kategori Semua.</li>`;return}
  more(terms);
- if(tab==="all"){const r=await SXAnswer.answer(q,all);if(my===reqId&&r.text){a.innerHTML=`<span class="lb">${r.ai?"Jawaban AI":"Ringkasan"}</span><br>${esc(r.text)}`;a.hidden=false}}
+}
+
+/* ---------- tab AI: jawaban ringkas gaya portal pencarian + sumber + lanjut ke ai.gowithdme.com ---------- */
+const I={
+ copy:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>',
+ share:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>',
+ spark:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>'
+};
+function chatMode(all){
+ const top=all.slice(0,5).map(d=>d.type),g=top.filter(x=>x==="gunung").length,e=top.filter(x=>x==="event").length;
+ if(/(gunung|mendaki|pendakian|hiking|open trip)/.test(SX.norm(q))||g>e)return "gunung";
+ return e?"konser":"trip";
+}
+function followUps(all){
+ const out=[],top=all.find(d=>d.type==="event"||d.type==="gunung");
+ if(top){out.push(top.type==="gunung"?`Persiapan naik ${top.title.slice(0,50)}`:`Tips datang ke ${top.title.slice(0,50)}`);
+  if(top.meta[0])out.push(`Event lain di ${top.meta[0]}`)}
+ out.push("Cari teman jalan untuk event ini");
+ return out.filter(t=>t.toLowerCase()!==q.toLowerCase()).slice(0,3);
+}
+function srcCard(s,i){
+ const city=s.meta&&s.meta[0],when=s.type==="blog"||s.type==="page"?"":fmt(s.date);
+ return `<a class="src" href="${esc(s.url)}" target="_blank" rel="noopener"><span class="sn">${i+1}</span>${s.img?`<span class="st" style="background-image:url('${esc(s.img)}')"></span>`:""}<span class="sb"><small>${esc(LABEL[s.type]||"gowithdme.com")}</small><b>${esc(s.title)}</b><em>${esc([when,city].filter(Boolean).join(" · "))}</em></span></a>`;
+}
+async function renderAI(my,all){
+ const box=$("ai");box.setAttribute("aria-busy","true");
+ box.innerHTML=`<div class="sk" role="status"><span class="lb">${I.spark}Mencari jawaban…</span><i></i><i></i><i class="s"></i></div>`;
+ const r=await SXAnswer.answer(q,all);if(my!==reqId)return;
+ box.setAttribute("aria-busy","false");
+ const link=(C.AI_CHAT_URL||"https://ai.gowithdme.com/")+"?q="+encodeURIComponent(q)+"&mode="+chatMode(all);
+ if(!r.text){
+  box.innerHTML=`<div class="a-empty">Belum ada hasil di GoWithDME untuk “${esc(q)}”.</div><div class="acts"><a class="go" href="${esc(link)}" target="_blank" rel="noopener">${I.spark}Tanya GoWithDME AI</a></div>`;
+  return;
+ }
+ const srcs=(r.sources||[]).slice(0,5);
+ box.innerHTML=`<div class="md">${SXMD.render(r.text,r.sources)}</div>
+  <p class="aln">${r.ai?"Dijawab AI dari data GoWithDME. Bisa keliru, cek sumber resmi sebelum berangkat.":"Ringkasan otomatis dari hasil pencarian (AI sedang tidak tersedia)."}</p>
+  ${srcs.length?`<h2 class="sh">Sumber</h2><div class="srcs">${srcs.map(srcCard).join("")}</div>`:""}
+  <div class="acts"><button type="button" data-a="copy">${I.copy}<span>Salin</span></button><button type="button" data-a="share">${I.share}<span>Bagikan</span></button><a class="go" href="${esc(link)}" target="_blank" rel="noopener">${I.spark}Lanjutkan di GoWithDME AI</a></div>
+  <ul class="fu">${followUps(all).map(t=>`<li><button type="button" data-q="${esc(t)}">${esc(t)}</button></li>`).join("")}</ul>`;
+ box.querySelector('[data-a="copy"]').onclick=e=>{const b=e.currentTarget;const done=()=>{b.lastChild.textContent="Tersalin";setTimeout(()=>b.lastChild.textContent="Salin",1500)};
+  try{navigator.clipboard.writeText(r.text.replace(/\s*\[\d{1,2}\]/g,"")).then(done,()=>{})}catch(_){}};
+ box.querySelector('[data-a="share"]').onclick=async e=>{const b=e.currentTarget,u=location.href;
+  try{if(navigator.share){await navigator.share({title:q+" — GWM Search",url:u});return}await navigator.clipboard.writeText(u);b.lastChild.textContent="Tautan tersalin";setTimeout(()=>b.lastChild.textContent="Bagikan",1500)}catch(_){}};
+ box.querySelectorAll(".fu button").forEach(b=>b.onclick=()=>go(b.dataset.q));
 }
 function more(terms){
  terms=terms||SX.terms(q);

@@ -97,3 +97,52 @@ main:focus{outline:none}
 body.in-res .home-foot{display:none}
 @media(min-width:900px){.it .th{flex-basis:100px;height:124px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- tab AI: jawaban ringkas ---------- */
+.ai{margin:8px 0 0}
+.ai .md{font-size:16px;line-height:1.7;overflow-wrap:break-word}
+.ai .md>p:first-child{font-size:18px;font-weight:650;line-height:1.55;margin-top:14px}
+.ai .md p{margin:10px 0}
+.ai .md h3{margin:22px 0 6px;font-size:17px;line-height:1.35}
+.ai .md ul,.ai .md ol{margin:8px 0;padding-left:22px}.ai .md li{margin:8px 0;padding-left:2px}
+.ai .md strong{font-weight:700}
+.ai .md code{background:var(--field);padding:1px 6px;border-radius:6px;font-size:.92em}
+.ai .md a:not(.cite){color:var(--blue)}
+.ai .tbl{overflow-x:auto;margin:10px 0;border-top:1px solid var(--line)}
+.ai table{border-collapse:collapse;width:100%;font-size:14px}
+.ai th,.ai td{text-align:left;padding:11px 10px 11px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.ai th{font-weight:700;white-space:nowrap}
+.ai td:first-child{min-width:150px}.ai td:nth-child(2){white-space:nowrap}.ai td:last-child{padding-right:0}
+.cite{display:inline-flex;align-items:center;gap:5px;vertical-align:baseline;margin:0 2px;padding:1px 9px 1px 3px;border-radius:999px;background:var(--chip);color:var(--mute);font-size:12px;font-weight:400;line-height:1.7;text-decoration:none;white-space:nowrap;max-width:190px;overflow:hidden;text-overflow:ellipsis}
+.cite i{font-style:normal;display:inline-grid;place-items:center;min-width:17px;height:17px;border-radius:50%;background:var(--blue);color:#fff;font-size:10px;font-weight:700}
+.cite:hover{background:var(--line);color:var(--ink)}
+.aln{margin:14px 0 0;font-size:12px;color:var(--mute)}
+.sh{margin:22px 0 8px;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+.srcs{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 4px;scroll-snap-type:x proximity}
+.srcs::-webkit-scrollbar{display:none}
+.src{flex:0 0 min(78%,270px);display:flex;gap:10px;align-items:flex-start;position:relative;padding:12px;border-radius:16px;background:var(--chip);text-decoration:none;scroll-snap-align:start}
+.src .sn{position:absolute;top:8px;right:10px;font-size:11px;color:var(--mute);font-weight:700}
+.src .st{flex:0 0 46px;height:58px;border-radius:10px;background:var(--field) center/cover no-repeat}
+.src .sb{min-width:0;display:flex;flex-direction:column;gap:2px}
+.src small{font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.04em}
+.src b{font-size:14px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.src em{font-style:normal;font-size:12px;color:var(--mute)}
+.acts{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:18px 0 4px}
+.acts button,.acts .go{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px;border-radius:19px;cursor:pointer;font-size:14px;color:var(--mute);-webkit-tap-highlight-color:transparent}
+.acts button:hover{background:var(--field);color:var(--ink)}
+.acts svg{width:18px;height:18px}
+.acts .go{margin-left:auto;background:var(--brand);color:#fff;font-weight:700}
+:root[data-theme=dark] .acts .go,:root:not([data-theme=light]) .acts .go{color:#062A20}
+@media(prefers-color-scheme:light){:root:not([data-theme]) .acts .go{color:#fff}}
+:root[data-theme=light] .acts .go{color:#fff}
+.fu{list-style:none;margin:10px 0 0;padding:0}
+.fu li{border-top:1px solid var(--line)}
+.fu button{all:unset;display:block;width:100%;box-sizing:border-box;padding:13px 4px;cursor:pointer}
+.fu button::before{content:"↪";color:var(--blue);margin-right:10px}
+.a-empty{padding:34px 0 8px;text-align:center;color:var(--mute)}
+.sk{padding:18px 0}.sk .lb{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--blue);margin-bottom:12px}.sk .lb svg{width:18px;height:18px;animation:sxp 1.4s ease-in-out infinite}
+.sk i{display:block;height:14px;border-radius:7px;margin:10px 0;background:linear-gradient(90deg,var(--field) 25%,var(--line) 50%,var(--field) 75%);background-size:200% 100%;animation:sxs 1.3s linear infinite}
+.sk i.s{width:62%}
+@keyframes sxs{to{background-position:-200% 0}}
+@keyframes sxp{50%{transform:scale(1.25) rotate(18deg);opacity:.6}}
+@media(min-width:900px){.srcs{flex-wrap:wrap;overflow:visible;margin:0;padding:0}.src{flex:1 1 calc(50% - 10px)}}
