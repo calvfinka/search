@@ -97,13 +97,3 @@ main:focus{outline:none}
 body.in-res .home-foot{display:none}
 @media(min-width:900px){.it .th{flex-basis:100px;height:124px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-
-/* v2: baris "yang dipahami" */
-.und{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin:0 0 8px;font-size:13px;color:var(--mute)}
-.und .chip{padding:3px 10px;border-radius:999px;background:var(--chip);color:var(--ink);font-weight:600}
-.und .lnk,.alt button{background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline;cursor:pointer}
-.alt{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
-.alt button{padding:6px 12px;border:1px solid currentColor;border-radius:999px;text-decoration:none;opacity:.85}
-.mt .past{background:rgba(180,60,40,.14);color:#b43c28;border-radius:6px;padding:0 6px;font-weight:600}
-.mt .spn{border:1px solid currentColor;border-radius:6px;padding:0 6px;opacity:.75}
-.answer .cite{font-weight:600;text-decoration:none;margin-left:2px}

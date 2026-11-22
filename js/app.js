@@ -69,30 +69,15 @@ async function route(){
  results=tab==="all"?all:all.filter(d=>d.type===tab);shown=0;$("list").innerHTML="";
  const per=it.from?` · ${fmt(it.from)}${it.to&&it.to!==it.from?" – "+fmt(it.to):" dan seterusnya"}, urut tanggal`:"";
  $("cnt").textContent=results.length?`${results.length} hasil${per}`:"";
- drawUnderstood(SX.last||{});
  const a=$("ans");a.hidden=true;
- if(!results.length){$("list").innerHTML=`<li class="empty">Tidak ada hasil untuk “${esc(q)}”.<br>Coba kata yang lebih umum, atau mulai dari:<div class="alt">${C.SUGGEST.map(([k,t])=>`<button type="button" data-q="${esc(t)}">${esc(t)}</button>`).join("")}</div></li>`;$("more").hidden=true;return}
+ if(!results.length){$("list").innerHTML=`<li class="empty">Tidak ada hasil untuk “${esc(q)}”.<br>Coba kata yang lebih umum atau pilih kategori Semua.</li>`;$("more").hidden=true;return}
  more(terms);
- if(tab==="all"){const r=await SXAnswer.answer(q,all);if(my===reqId&&r.text){
-   // [1], [2] pada jawaban AI menjadi tautan ke hasil yang dikutip
-   const body=esc(r.text).replace(/\[(\d)\]/g,(m,n)=>{const c=r.cites[n-1];return c?`<a class="cite" href="${esc(c.url)}" aria-label="Sumber ${n}: ${esc(c.title)}">[${n}]</a>`:""});
-   a.innerHTML=`<span class="lb">${r.ai?"Jawaban AI":"Ringkasan"}</span><br>${body}`;a.hidden=false}}
+ if(tab==="all"){const r=await SXAnswer.answer(q,all);if(my===reqId&&r.text){a.innerHTML=`<span class="lb">${r.ai?"Jawaban AI":"Ringkasan"}</span><br>${esc(r.text)}`;a.hidden=false}}
 }
-/* Tunjukkan apa yang dipahami mesin (filter) dan apa yang diubah (typo, hasil dilonggarkan) supaya tidak terasa "ajaib". */
-function drawUnderstood(m){
- const u=$("und"),chips=(m.chips||[]).map(c=>`<span class="chip">${esc(c)}</span>`).join("");
- let note=[];
- if(m.didYouMean)note.push(`Menampilkan hasil untuk <button type="button" class="lnk" data-q="${esc(m.didYouMean)}">${esc(m.didYouMean)}</button>`);
- if(m.relaxed)note.push("Tidak ada yang cocok persis, ini yang paling mendekati");
- if(m.widened)note.push("Tidak ada acara pada tanggal itu, menampilkan yang terdekat sesudahnya");
- u.innerHTML=chips+(note.length?`<span class="nt">${note.join(" · ")}</span>`:"");u.hidden=!u.innerHTML;
-}
-$("und").addEventListener("click",e=>{const b=e.target.closest("[data-q]");if(b)go(b.dataset.q)});
-$("list").addEventListener("click",e=>{const b=e.target.closest(".alt [data-q]");if(b)go(b.dataset.q)});
 function more(terms){
  terms=terms||SX.terms(q);
  const slice=results.slice(shown,shown+C.PER_PAGE);shown+=slice.length;
- $("list").insertAdjacentHTML("beforeend",slice.map(d=>`<li class="it"><div class="th" ${d.img?`style="background-image:url('${esc(d.img)}')"`:"hidden"}></div><div class="bd"><div class="tp">${LABEL[d.type]||""}${d.cat&&d.type!=="page"?" · "+esc(d.cat):""}</div><h3><a href="${esc(d.url)}">${hl(d.title,terms)}</a></h3><p>${hl(d.desc,terms)}</p><div class="mt">${d.past?`<span class="past">Sudah lewat</span>`:""}${d.sponsor&&d.boost>0?`<span class="spn">${esc(d.sponsor)}</span>`:""}${d.date&&d.type!=="blog"?`<span>${fmt(d.date)}</span>`:""}${d.meta.slice(0,3).map(m=>`<span>${esc(m)}</span>`).join("")}</div></div></li>`).join(""));
+ $("list").insertAdjacentHTML("beforeend",slice.map(d=>`<li class="it"><div class="th" ${d.img?`style="background-image:url('${esc(d.img)}')"`:"hidden"}></div><div class="bd"><div class="tp">${LABEL[d.type]||""}${d.cat&&d.type!=="page"?" · "+esc(d.cat):""}</div><h3><a href="${esc(d.url)}">${hl(d.title,terms)}</a></h3><p>${hl(d.desc,terms)}</p><div class="mt">${d.date&&d.type!=="blog"?`<span>${fmt(d.date)}</span>`:""}${d.meta.slice(0,3).map(m=>`<span>${esc(m)}</span>`).join("")}</div></div></li>`).join(""));
  $("more").hidden=shown>=results.length;
 }
 $("more").addEventListener("click",()=>more());
