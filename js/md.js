@@ -5,14 +5,16 @@ const SAFE=/^https:\/\/gowithdme\.com\/[A-Za-z0-9\-._~\/?=#%&]*$/;
 const short=(t,n)=>{t=String(t||"");return t.length>n?t.slice(0,n-1)+"…":t};
 function render(text,sources){
  sources=sources||[];
- const inline=s=>esc(s)
+ const prep=s=>String(s).replace(/<br\s*\/?>/gi,"\u0001").replace(/<li[^>]*>/gi,"\u0002\u2022 ").replace(/<\/?[a-z][a-z0-9]*(\s[^>]*)?>/gi,"");
+ const fin=h=>h.replace(/[\u0001\u0002]/g,"<br>").replace(/^<br>/,"");
+ const inline=s=>fin(esc(prep(s))
   .replace(/\[([^\]]{1,120})\]\((https:\/\/gowithdme\.com\/[A-Za-z0-9\-._~\/?=#%]*)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')
   .replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
   .replace(/`([^`]+)`/g,"<code>$1</code>")
   .replace(/\[(\d{1,2})\](?!\()/g,(m,n)=>{
     const s=sources[+n-1];
     return s&&SAFE.test(s.url)?`<a class="cite" href="${esc(s.url)}" target="_blank" rel="noopener" title="${esc(s.title)}"><i>${+n}</i>${esc(short(s.title,22))}</a>`:"";
-  });
+  }));
  const out=[];let list=null,tbl=false;
  const close=()=>{if(list){out.push("</"+list+">");list=null}if(tbl){out.push("</tbody></table></div>");tbl=false}};
  String(text||"").split("\n").forEach(l=>{
