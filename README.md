@@ -1,26 +1,36 @@
-# Volley Manager
+# GWM Search — search.gowithdme.com
 
-Game manajer bola voli berbasis web. Visual dulu, teks seminimal mungkin. Tanpa framework, tanpa server.
-
-## Menjalankan
-Unggah seluruh isi folder ke repo GitHub, lalu aktifkan **Settings → Pages**. Wajib dibuka lewat https (ES modules), bukan dengan membuka `index.html` langsung dari penyimpanan.
+Mesin pencari statis untuk ekosistem GoWithDME (event, gunung, blog, halaman). Mirip portal pencarian Naver: kolom besar di beranda, saran ketikan, tab kategori, ringkasan jawaban di atas hasil.
 
 ## Struktur
-- `js/inti/` konfigurasi angka, waktu nyata, simpan lokal, acak ber-seed
-- `js/data/` nama pemain, jenjang liga
-- `js/sistem/` logika murni (tanpa HTML): pemain, stamina, pertandingan, liga, ekonomi
-- `js/layar/` tampilan saja: skuad, pertandingan, pembantu gambar
+```
+CNAME                 search.gowithdme.com (GitHub Pages)
+index.html            beranda + hasil (satu halaman, rute ?q=...&tab=...)
+404.html  robots.txt  manifest.webmanifest  opensearch.xml (bisa ditambah ke browser sebagai mesin cari)
+css/search.css        tampilan (terang/gelap otomatis)
+js/config.js          SATU-SATUNYA tempat sambungan ke gowithdme.com
+js/engine.js          muat data, normalisasi, skor, sinonim, toleransi salah ketik, saran
+js/answer.js          ringkasan lokal atau jawaban AI (opsional)
+js/app.js             UI: rute, tab, paging, saran, pintasan "/"
+data/                 cadangan events.json, posts.json + synonyms.json
+worker/ai-answer.js   Cloudflare Worker opsional untuk jawaban AI
+tools/sync.py         salin data dari gowithdme.com
+.github/workflows/    sync.yml (tiap 6 jam)
+```
 
-- `assets/` gambar: logo, hero, stadion, pose pemain (lihat `HANDOFF.md` untuk nama file)
+## Pasang
+1. Buat repo `gowithdme-search`, upload isi folder ini, push ke `main`.
+2. Settings > Pages > Deploy from branch `main` / root. Custom domain: `search.gowithdme.com`, centang Enforce HTTPS.
+3. Cloudflare > DNS > tambah **CNAME** `search` → `calvfinka.github.io` (ganti dengan akun GitHub pemilik repo), **Proxy status: DNS only** (awan abu-abu) sampai sertifikat HTTPS GitHub terbit; sesudahnya boleh Proxied dengan SSL mode Full.
+4. Settings > Actions > General > Workflow permissions: Read and write.
 
-## Menyeimbangkan game
-Semua angka ada di `js/inti/konfigurasi.js`: laju pulih stamina, biaya per posisi, peluang poin, hadiah koin.
+Uji lokal: `python3 -m http.server 8000` lalu buka `http://localhost:8000/`.
 
-## Mode 3D Premium (v15, audit v15.1)
-Mode pertandingan 3D memakai arena indoor procedural dengan lantai parquet, net berjaring, tribun, crowd instanced, LED perimeter, rangka atap, pemain procedural lebih detail, bola dengan panel, dan pencahayaan sinematik yang dioptimalkan untuk HP. Detail pemasangan dan batasan model ada di `docs/V15_3D_PREMIUM_UPGRADE.md`.
+## Menyambung data
+Data dibaca langsung dari `https://gowithdme.com/data/events.json` dan `posts.json` (otomatis ikut terbaru), disimpan 5 menit di sessionStorage, cadangan ke `data/`. Pola URL hasil: event `/id/e/<slug>`, blog `/blog/<kategori>/<slug>`. Jika pola di situs induk berubah, ubah di `build()` pada `js/engine.js`.
 
-## Sudah ada
-Menu utama, Kelola Tim bertab (Skuad/Strategi/Formasi/Pasar), liga 8 tim + Kompetisi bertab (klasemen, jadwal, analitik dengan grafik performa dan win rate), laga live berperspektif dengan pemain berpose, transfer + scouting, latihan, fasilitas, cedera, profil pemain & manajer.
+## Jawaban AI (opsional)
+Isi `AI_ENDPOINT` di `js/config.js` dengan URL Worker. Kunci API hanya di Secret Cloudflare, jangan di repo.
 
-## Riwayat & serah-terima
-Lihat `HANDOFF.md` untuk riwayat versi, struktur, jebakan, dan daftar yang belum dikerjakan.
+## Tahap berikutnya
+Komunitas dan ajakan (Supabase, kunci anon saja), halaman `/e/` per kategori, riwayat pencarian, pencarian gambar poster, sitemap, analitik.

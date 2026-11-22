@@ -1,235 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#18293E" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Volleyball 2D</title>
-  <meta name="description" content="Side-view 2v2 action volleyball game built with Canvas 2D and WebAudio." />
-  <meta property="og:title" content="Volleyball 2D" />
-  <meta property="og:description" content="Side-view 2v2 action volleyball game built with Canvas 2D and WebAudio." />
-  <meta property="og:type" content="website" />
-  <link rel="stylesheet" href="./css/style.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GWM Search — cari konser, festival, gunung, dan blog</title>
+<meta name="description" content="Mesin pencari GoWithDME: temukan konser, festival, pendakian, blog, dan komunitas dalam satu kolom.">
+<meta name="theme-color" content="#0E5A46">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="search" type="application/opensearchdescription+xml" title="GWM Search" href="opensearch.xml">
+<link rel="stylesheet" href="css/search.css">
 </head>
-<body data-state="title">
-  <!-- Main Viewport Stage -->
-  <main id="app" class="app-shell">
-    <canvas id="game-canvas" width="1280" height="720" aria-label="Volleyball 2D Court"></canvas>
+<body>
+<header class="top" id="top">
+  <a class="brand" href="/" aria-label="GWM Search"><span class="mk">G</span><span class="bn">GWM <b>Search</b></span></a>
+  <form class="bar bar-sm" id="fSm" role="search" hidden>
+    <input id="qSm" type="search" placeholder="Tanyakan apa saja." autocomplete="off" enterkeyhint="search" aria-label="Cari">
+    <button aria-label="Cari">↑</button>
+  </form>
+  <a class="portal" href="https://gowithdme.com">gowithdme.com ↗</a>
+</header>
 
-    <!-- Screen Overlays (mounted/managed by js/core/screen.js & js/screen/*) -->
-    <div id="ui-layer" class="ui-layer">
-      <!-- Title / Main Menu Screen -->
-      <section id="screen-menu" class="screen screen-menu is-active" aria-label="Main Menu">
-        <div class="menu-layout">
-          <div class="menu-brand-col">
-            <div class="title-lockup">
-              <svg class="title-emblem" viewBox="0 0 380 112" width="380" height="112" aria-hidden="true">
-                <defs>
-                  <linearGradient id="courtStripe" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#E84A27" />
-                    <stop offset="100%" stop-color="#F29F05" />
-                  </linearGradient>
-                </defs>
-                <!-- Crest Ball Icon -->
-                <g transform="translate(8, 12)">
-                  <circle cx="44" cy="44" r="40" fill="#FFFDF8" stroke="#18293E" stroke-width="5" />
-                  <path d="M12 30 C30 20, 56 20, 76 34" fill="none" stroke="#E84A27" stroke-width="5" stroke-linecap="round" />
-                  <path d="M14 58 C34 44, 58 46, 76 58" fill="none" stroke="#0E7C7B" stroke-width="5" stroke-linecap="round" />
-                  <path d="M44 6 C38 28, 38 60, 44 82" fill="none" stroke="#18293E" stroke-width="4.5" stroke-linecap="round" />
-                </g>
-                <!-- Display Wordmark -->
-                <text x="104" y="54" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="38" letter-spacing="-1" fill="#18293E">VOLLEYBALL</text>
-                <rect x="104" y="66" width="154" height="8" rx="4" fill="url(#courtStripe)" />
-                <text x="270" y="84" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="34" fill="#E84A27">2D</text>
-              </svg>
-            </div>
-            <p class="menu-subtitle">2v2 Side-View Rally · First to 15</p>
+<main id="home" class="home">
+  <h1 class="hero"><span>Temukan</span> <span>jawaban</span> yang lebih <span>mendalam.</span></h1>
+  <form class="bar" id="fBig" role="search">
+    <textarea id="qBig" rows="2" placeholder="Tanyakan apa saja." autocomplete="off" aria-label="Cari" enterkeyhint="search"></textarea>
+    <button aria-label="Cari">↑</button>
+    <ul class="sug" id="sugBox" role="listbox" hidden></ul>
+  </form>
+  <ul class="ideas" id="ideas"></ul>
+</main>
 
-            <div class="menu-actions">
-              <button id="btn-play" type="button" class="btn btn-primary" data-start="true">
-                Play Match
-              </button>
-              <button id="btn-settings" type="button" class="btn btn-secondary">
-                Settings
-              </button>
-            </div>
+<main id="res" class="res" hidden>
+  <nav class="tabs" id="tabs" aria-label="Kategori hasil"></nav>
+  <section class="answer" id="ans" hidden></section>
+  <p class="count" id="cnt"></p>
+  <ol class="list" id="list"></ol>
+  <button class="more" id="more" hidden>Tampilkan lebih banyak</button>
+</main>
 
-            <p class="control-hint-line" id="menu-controls-hint">
-              Arrows Move &amp; Jump · Space Serve / Receive / Smash · P Pause
-            </p>
-          </div>
+<footer class="foot">Hasil dari data GoWithDME dan bisa tidak akurat. <a href="https://gowithdme.com/id/privacy">Kebijakan Privasi</a> · <a href="https://gowithdme.com/id/bantuan">Bantuan</a></footer>
 
-          <aside class="menu-roster-col" aria-label="Matchup Roster and Stats">
-            <div id="menu-matchup-card" class="matchup-card"></div>
-            <div id="menu-record-line" class="record-line"></div>
-          </aside>
-        </div>
-      </section>
-
-      <!-- Settings Screen -->
-      <section id="screen-settings" class="screen screen-settings" aria-label="Settings" hidden>
-        <div class="panel-card settings-card">
-          <div class="panel-header">
-            <h1 class="panel-title">Settings</h1>
-            <button id="btn-settings-back" type="button" class="btn btn-ghost">Back</button>
-          </div>
-
-          <div class="settings-list">
-            <div class="setting-row">
-              <div class="setting-meta">
-                <span class="setting-label">Sound Effects</span>
-                <span class="setting-desc">WebAudio court hits, whistles, and crowd chimes</span>
-              </div>
-              <button id="toggle-sound" type="button" class="toggle-btn" aria-pressed="true">On</button>
-            </div>
-
-            <div class="setting-row">
-              <div class="setting-meta">
-                <span class="setting-label">Touch Controls</span>
-                <span class="setting-desc">Virtual joystick &amp; action buttons on screen</span>
-              </div>
-              <div class="segmented-group" role="group" aria-label="Touch Controls Mode">
-                <button type="button" class="seg-btn" data-touch-mode="auto">Auto</button>
-                <button type="button" class="seg-btn" data-touch-mode="on">On</button>
-                <button type="button" class="seg-btn" data-touch-mode="off">Off</button>
-              </div>
-            </div>
-
-            <div class="setting-row">
-              <div class="setting-meta">
-                <span class="setting-label">Opponent AI</span>
-                <span class="setting-desc">Reaction speed and blocking aggression</span>
-              </div>
-              <div class="segmented-group" role="group" aria-label="AI Difficulty">
-                <button type="button" class="seg-btn" data-difficulty="casual">Casual</button>
-                <button type="button" class="seg-btn" data-difficulty="pro">Pro</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="settings-footer">
-            <button id="btn-reset-save" type="button" class="btn btn-danger-outline">Reset Match Record</button>
-            <span id="settings-save-status" class="save-status" aria-live="polite"></span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Active Match HUD & Touch Controls -->
-      <section id="screen-match" class="screen screen-match" aria-label="Match HUD" hidden>
-        <!-- Top Scoreboard Strip -->
-        <header class="match-hud-top">
-          <div class="hud-left-spacer"></div>
-          <div class="scoreboard" aria-live="polite">
-            <div class="score-team score-home">
-              <span class="team-tag" id="hud-home-name">SOLARIS</span>
-              <span class="serve-dot" id="hud-serve-home" aria-label="Serving" hidden></span>
-              <span class="score-num" id="hud-score-home">0</span>
-            </div>
-            <div class="score-divider">
-              <span class="score-target">TO 15</span>
-            </div>
-            <div class="score-team score-away">
-              <span class="score-num" id="hud-score-away">0</span>
-              <span class="serve-dot" id="hud-serve-away" aria-label="Serving" hidden></span>
-              <span class="team-tag" id="hud-away-name">APEX</span>
-            </div>
-          </div>
-          <div class="hud-top-actions">
-            <button id="btn-hud-mute" type="button" class="icon-btn" aria-label="Toggle Sound" tabindex="-1">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                <path id="icon-sound-waves" d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-              </svg>
-            </button>
-            <button id="btn-hud-pause" type="button" class="icon-btn" aria-label="Pause Match" tabindex="-1">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-                <rect x="6" y="4" width="4" height="16" rx="1.2"></rect>
-                <rect x="14" y="4" width="4" height="16" rx="1.2"></rect>
-              </svg>
-            </button>
-          </div>
-        </header>
-
-        <!-- Contextual Rally Callout Banner (Serve / Match Point / Point Scored) -->
-        <div id="hud-callout" class="hud-callout" hidden></div>
-
-        <!-- Touch Controls Overlay (left virtual joystick + right Jump / Smash / Receive) -->
-        <div id="touch-controls" class="touch-controls" hidden>
-          <div id="touch-joystick" class="joystick-zone" aria-label="Move Joystick">
-            <div class="joystick-base">
-              <div id="joystick-knob" class="joystick-knob"></div>
-            </div>
-          </div>
-
-          <div class="action-pad">
-            <button id="touch-btn-receive" type="button" class="touch-action-btn touch-receive" aria-label="Receive or Serve">
-              <span class="touch-btn-label" id="touch-receive-label">RECV</span>
-            </button>
-            <button id="touch-btn-smash" type="button" class="touch-action-btn touch-smash" aria-label="Smash">
-              <span class="touch-btn-label">SMASH</span>
-            </button>
-            <button id="touch-btn-jump" type="button" class="touch-action-btn touch-jump" aria-label="Jump">
-              <span class="touch-btn-label">JUMP</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Pause Modal -->
-      <div id="modal-pause" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="pause-title" hidden>
-        <div class="modal-card">
-          <h2 id="pause-title" class="modal-title">Match Paused</h2>
-          <p class="modal-score-summary" id="pause-score-line">SOLARIS 0 — 0 APEX</p>
-          <div class="modal-actions">
-            <button id="btn-resume" type="button" class="btn btn-primary">Resume</button>
-            <button id="btn-restart-match" type="button" class="btn btn-secondary">Restart Match</button>
-            <button id="btn-quit-menu" type="button" class="btn btn-ghost">Main Menu</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Final Result Modal -->
-      <div id="modal-result" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="result-title" hidden>
-        <div class="modal-card result-card">
-          <span class="result-kicker" id="result-kicker">Final Score</span>
-          <h2 id="result-title" class="modal-title">Victory</h2>
-          <div class="result-scoreboard">
-            <div class="result-team">
-              <span class="result-team-name" id="result-home-name">SOLARIS</span>
-              <span class="result-team-score" id="result-home-score">15</span>
-            </div>
-            <span class="result-dash">—</span>
-            <div class="result-team">
-              <span class="result-team-score" id="result-away-score">11</span>
-              <span class="result-team-name" id="result-away-name">APEX</span>
-            </div>
-          </div>
-          <div class="result-stats-row" id="result-stats-row"></div>
-          <div class="modal-actions">
-            <button id="btn-play-again" type="button" class="btn btn-primary" data-start="true">Play Again</button>
-            <button id="btn-result-menu" type="button" class="btn btn-secondary">Main Menu</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Portrait Orientation Fallback Overlay -->
-    <div id="rotate-overlay" class="rotate-overlay" role="alert" aria-live="assertive">
-      <div class="rotate-card">
-        <svg class="rotate-icon" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="18" y="8" width="28" height="48" rx="5"></rect>
-          <line x1="28" y1="49" x2="36" y2="49"></line>
-          <path d="M52 24 C57 30, 57 38, 52 44" stroke="#F29F05"></path>
-          <polyline points="50 40 52 45 57 43" stroke="#F29F05"></polyline>
-        </svg>
-        <h2 class="rotate-title">Rotate your phone</h2>
-        <p class="rotate-desc">Volleyball 2D is played in landscape orientation.</p>
-      </div>
-    </div>
-  </main>
-
-  <script type="module" src="./js/main.js"></script>
+<script src="js/config.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/answer.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
