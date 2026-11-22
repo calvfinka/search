@@ -2,44 +2,101 @@
 <html lang="id">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <title>GWM Search — cari konser, festival, gunung, dan blog</title>
 <meta name="description" content="Mesin pencari GoWithDME: temukan konser, festival, pendakian, blog, dan komunitas dalam satu kolom.">
 <meta name="theme-color" content="#0E5A46">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="search" type="application/opensearchdescription+xml" title="GWM Search" href="opensearch.xml">
+<script>try{var t=localStorage.getItem("sx_theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <link rel="stylesheet" href="css/search.css">
 </head>
 <body>
+<a class="skip" href="#main">Lewati ke konten</a>
+
 <header class="top" id="top">
-  <a class="brand" href="/" aria-label="GWM Search"><span class="mk">G</span><span class="bn">GWM <b>Search</b></span></a>
-  <form class="bar bar-sm" id="fSm" role="search" hidden>
-    <input id="qSm" type="search" placeholder="Tanyakan apa saja." autocomplete="off" enterkeyhint="search" aria-label="Cari">
-    <button aria-label="Cari">↑</button>
-  </form>
-  <a class="portal" href="https://gowithdme.com">gowithdme.com ↗</a>
+  <button class="ib" id="menuBtn" type="button" aria-label="Buka menu" aria-controls="drawer" aria-expanded="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h16"/></svg>
+  </button>
+  <a class="logo" href="./" id="logo" aria-label="GWM Search, ke beranda">
+    <img src="assets/logo.svg" width="32" height="32" alt="">
+  </a>
+  <button class="ib" id="newBtn" type="button" aria-label="Pencarian baru">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6M18.4 3.6a1.8 1.8 0 0 1 2.5 2.5L12 15l-3.5.9.9-3.5z"/></svg>
+  </button>
 </header>
 
-<main id="home" class="home">
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Menu" aria-hidden="true" inert>
+  <div class="dh">
+    <button class="dnew" id="newBtn2" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6M18.4 3.6a1.8 1.8 0 0 1 2.5 2.5L12 15l-3.5.9.9-3.5z"/></svg>
+      Pencarian baru
+    </button>
+    <button class="ib" id="closeBtn" type="button" aria-label="Tutup menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="db">
+    <section>
+      <h2>Riwayat</h2>
+      <ul class="hist" id="hist"></ul>
+      <button class="lnk" id="clrHist" type="button" hidden>Hapus semua riwayat</button>
+    </section>
+    <section>
+      <h2>Jelajahi GoWithDME</h2>
+      <ul class="nav">
+        <li><a href="https://gowithdme.com/id/event">Semua event</a></li>
+        <li><a href="https://gowithdme.com/id/gunung">Naik gunung</a></li>
+        <li><a href="https://gowithdme.com/id/teman">Cari teman jalan</a></li>
+        <li><a href="https://gowithdme.com/id/komunitas">Komunitas</a></li>
+        <li><a href="https://gowithdme.com/blog/">Blog</a></li>
+        <li><a href="https://gowithdme.com/id/ajukan">Ajukan event</a></li>
+      </ul>
+    </section>
+    <section>
+      <h2>Tampilan</h2>
+      <div class="seg" id="themeSeg" role="group" aria-label="Tema">
+        <button type="button" data-t="auto" aria-pressed="true">Otomatis</button>
+        <button type="button" data-t="light" aria-pressed="false">Terang</button>
+        <button type="button" data-t="dark" aria-pressed="false">Gelap</button>
+      </div>
+    </section>
+  </div>
+  <div class="df">
+    <a class="login" href="https://gowithdme.com/id/login">Masuk ke GoWithDME</a>
+    <p><a href="https://gowithdme.com/id/bantuan">Bantuan</a> · <a href="https://gowithdme.com/id/privacy">Privasi</a> · <a href="https://gowithdme.com/id/terms">Syarat</a></p>
+    <p class="note">Riwayat hanya tersimpan di perangkat ini.</p>
+  </div>
+</aside>
+
+<main id="main" class="home" tabindex="-1">
   <h1 class="hero"><span>Temukan</span> <span>jawaban</span> yang lebih <span>mendalam.</span></h1>
   <form class="bar" id="fBig" role="search">
     <textarea id="qBig" rows="2" placeholder="Tanyakan apa saja." autocomplete="off" aria-label="Cari" enterkeyhint="search"></textarea>
-    <button aria-label="Cari">↑</button>
+    <button aria-label="Cari" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
     <ul class="sug" id="sugBox" role="listbox" hidden></ul>
   </form>
   <ul class="ideas" id="ideas"></ul>
 </main>
 
-<main id="res" class="res" hidden>
-  <nav class="tabs" id="tabs" aria-label="Kategori hasil"></nav>
-  <section class="answer" id="ans" hidden></section>
+<main id="res" class="res" hidden tabindex="-1">
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Kategori hasil"></nav>
+  <div class="qb" id="qb"></div>
+  <section class="answer" id="ans" hidden aria-live="polite"></section>
   <p class="count" id="cnt"></p>
   <ol class="list" id="list"></ol>
-  <button class="more" id="more" hidden>Tampilkan lebih banyak</button>
+  <button class="more" id="more" type="button" hidden>Tampilkan lebih banyak</button>
 </main>
 
-<footer class="foot">Hasil dari data GoWithDME dan bisa tidak akurat. <a href="https://gowithdme.com/id/privacy">Kebijakan Privasi</a> · <a href="https://gowithdme.com/id/bantuan">Bantuan</a></footer>
+<form class="composer" id="fSm" role="search" hidden>
+  <div class="bar">
+    <input id="qSm" type="search" placeholder="Tanyakan apa saja." autocomplete="off" enterkeyhint="search" aria-label="Cari lagi">
+    <button aria-label="Cari" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+  </div>
+  <p class="foot">Hasil dari data GoWithDME dan bisa tidak akurat.</p>
+</form>
+
+<footer class="foot home-foot" id="foot">Hasil dari data GoWithDME dan bisa tidak akurat. <a href="https://gowithdme.com/id/privacy">Kebijakan Privasi</a></footer>
 
 <script src="js/config.js"></script>
 <script src="js/engine.js"></script>

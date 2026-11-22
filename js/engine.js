@@ -19,7 +19,7 @@ function build(events,posts){
   const hike=e.category==="naikgunung";
   d.push({type:hike?"gunung":"event",cat:e.category,title:e.title,
    desc:e.description||"",url:`${site}/id/e/${e.slug}`,img:e.poster_url||"",
-   date:e.event_date||"",meta:[city,e.venue,e.price_label,e.mountain,e.altitude_mdpl?e.altitude_mdpl+" mdpl":"",e.difficulty].filter(Boolean),
+   date:e.event_date||"",end:e.end_date||"",meta:[city,e.venue,e.price_label,e.mountain,e.altitude_mdpl?e.altitude_mdpl+" mdpl":"",e.difficulty].filter(Boolean),
    extra:[e.genre,e.lineup,e.organizer,e.mountain,e.title_en,city,e.category].filter(Boolean).join(" "),boost:+e.boost_score||0});
  });
  (posts||[]).forEach(p=>d.push({type:"blog",cat:p.category,title:p.title,
@@ -52,34 +52,66 @@ function lev1(a,b){
  return e+(a.length-i)+(b.length-j)<=1;
 }
 function expand(tok){const s=new Set([tok]);for(const k in SYN){const g=[k,...SYN[k]].map(norm);if(g.includes(tok))g.forEach(x=>x.split(" ").forEach(w=>s.add(w)));}return [...s];}
+const STOP=new Set("di ke dari yang untuk dan atau dengan pada ini itu apa siapa kapan dimana mana bagaimana gimana saja aja ada adalah apakah the a of in to for tolong cari carikan dong ya nih".split(" "));
+const MN="januari februari maret april mei juni juli agustus september oktober november desember".split(" ");
+const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+/* Pahami "bulan ini", "terdekat", "desember 2026", dst. -> filter tanggal; sisanya jadi kata kunci. */
+function intent(n){
+ let s=" "+n+" ",from=null,to=null,near=false;const now=new Date(),t0=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+ const eat=(re,fn)=>{const m=s.match(re);if(m){s=s.replace(re," ");fn(m)}};
+ eat(/ bulan ini /,()=>{from=ymd(t0);to=ymd(new Date(t0.getFullYear(),t0.getMonth()+1,0))});
+ eat(/ bulan depan /,()=>{from=ymd(new Date(t0.getFullYear(),t0.getMonth()+1,1));to=ymd(new Date(t0.getFullYear(),t0.getMonth()+2,0))});
+ eat(/ minggu ini /,()=>{from=ymd(t0);to=ymd(addD(t0,(7-t0.getDay())%7))});
+ eat(/ hari ini /,()=>{from=to=ymd(t0)});
+ eat(/ besok /,()=>{from=to=ymd(addD(t0,1))});
+ eat(/ (akhir pekan|weekend) /,()=>{const w=t0.getDay();if(w===0)from=to=ymd(t0);else{const sat=addD(t0,6-w);from=ymd(sat);to=ymd(addD(sat,1))}});
+ eat(/ akhir tahun /,()=>{from=ymd(new Date(t0.getFullYear(),11,1));to=ymd(new Date(t0.getFullYear(),11,31))});
+ eat(new RegExp(" ("+MN.join("|")+")( \\d{4})? "),m=>{const mo=MN.indexOf(m[1]);let y=m[2]?+m[2]:t0.getFullYear();if(!m[2]&&mo<t0.getMonth())y++;from=ymd(new Date(y,mo,1));to=ymd(new Date(y,mo+1,0))});
+ eat(/ (terdekat|segera|mendatang|akan datang) /,()=>{near=true});
+ if(near&&!from)from=ymd(t0);
+ const toks=s.split(" ").filter(t=>t&&!STOP.has(t));
+ return {toks,from,to,near,q:toks.join(" ")};
+}
+const has=(str,t)=>t.length<4?(" "+str).includes(" "+t):str.includes(t);
 function search(q,tab){
  const r=run(q,tab,true);return r.length?r:run(q,tab,false);
 }
 function run(q,tab,strict){
- const n=norm(q);if(!n)return [];const toks=n.split(" ");const groups=toks.map(expand);
- const today=new Date().toISOString().slice(0,10);const out=[];
+ const it=intent(norm(q)),toks=it.toks,dated=!!it.from;
+ if(!toks.length&&!dated)return [];
+ const groups=toks.map(expand);const today=ymd(new Date());const out=[];
  for(const d of DOCS||[]){
   if(tab&&tab!=="all"&&d.type!==tab)continue;
-  let sc=0,hit=0;const words=d.nt.split(" ");
-  if(d.nt.includes(n))sc+=12;
+  if(dated){
+   if(!d.date||d.type==="blog"||d.type==="page")continue;
+   const end=d.end||d.date;
+   if(end<it.from)continue;if(it.to&&d.date>it.to)continue;
+  }
+  let sc=dated?1:0,hit=0;
+  if(toks.length&&d.nt.includes(it.q))sc+=12;
   for(const g of groups){let best=0;
    for(const t of g){const w=t===g[0]?1:.6;
-    if(d.nt.includes(t))best=Math.max(best,(words.includes(t)?6:4)*w);
-    else if(d.nb.includes(t))best=Math.max(best,1.5*w);
+    if(has(d.nt,t))best=Math.max(best,(d.nt.split(" ").includes(t)?6:4)*w);
+    else if(has(d.nb,t))best=Math.max(best,1.5*w);
     else if(t.length>=5&&d.ws.some(x=>lev1(t,x)))best=Math.max(best,2*w);}
    if(best){hit++;sc+=best}}
-  if(!hit||(toks.length>1&&hit<(strict?toks.length:Math.ceil(toks.length/2))))continue;
-  sc+=hit===toks.length?3:0;
-  if(d.date&&d.type!=="blog"){const f=d.date>=today;sc+=f?2:-1;if(f){const days=(new Date(d.date)-new Date(today))/864e5;if(days<=30)sc+=1.5}}
+  if(toks.length){
+   const need=strict?toks.length:Math.ceil(toks.length/2);
+   if(!hit||hit<need)continue;
+   if(hit===toks.length)sc+=3;
+  }
+  if(d.date&&d.type!=="blog"&&!dated){const f=d.date>=today;sc+=f?2:-1;if(f){const days=(new Date(d.date)-new Date(today))/864e5;if(days<=30)sc+=1.5}}
   sc+=Math.min(d.boost,5)*.3;
   out.push({d,sc});
  }
- return out.sort((a,b)=>b.sc-a.sc).map(x=>x.d);
+ out.sort(dated?((a,b)=>(a.d.date<b.d.date?-1:a.d.date>b.d.date?1:b.sc-a.sc)):((a,b)=>b.sc-a.sc));
+ return out.map(x=>x.d);
 }
 function suggest(q,max=6){
  const n=norm(q);if(n.length<2)return [];const seen=new Set(),r=[];
  for(const d of DOCS||[]){if(d.nt.includes(n)&&!seen.has(d.nt)){seen.add(d.nt);r.push(d.title);if(r.length>=max)break}}
  return r;
 }
-window.SX={load,search,suggest,norm};
+window.SX={load,search,suggest,norm,intent:q=>intent(norm(q)),terms:q=>intent(norm(q)).toks};
 })();
