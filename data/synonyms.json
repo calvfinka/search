@@ -1,1 +1,196 @@
-{"konser":["concert","gig","manggung","live"],"gunung":["pendakian","naik gunung","hiking","mountain","mdpl"],"festival":["fest","festival musik"],"pameran":["expo","exhibition"],"murah":["gratis","free","hemat"],"tiket":["ticket","harga","price"],"teman":["bareng","barengan","buddy"],"jakarta":["dki","jabodetabek"],"bandung":["bdg"],"yogyakarta":["jogja","yogya"]}
+{
+ "konser": [
+  "concert",
+  "gig",
+  "manggung",
+  "live music"
+ ],
+ "gunung": [
+  "pendakian",
+  "naik gunung",
+  "hiking",
+  "mountain",
+  "mdpl",
+  "open trip",
+  "mendaki",
+  "trekking",
+  "summit"
+ ],
+ "festival": [
+  "fest",
+  "festival musik",
+  "music festival"
+ ],
+ "pameran": [
+  "expo",
+  "exhibition",
+  "bazar"
+ ],
+ "gratis": [
+  "free",
+  "tanpa biaya",
+  "gratisan"
+ ],
+ "murah": [
+  "hemat",
+  "terjangkau",
+  "budget"
+ ],
+ "tiket": [
+  "ticket",
+  "harga tiket"
+ ],
+ "teman": [
+  "bareng",
+  "barengan",
+  "buddy",
+  "partner"
+ ],
+ "pemula": [
+  "beginner",
+  "newbie",
+  "mudah",
+  "santai"
+ ],
+ "sulit": [
+  "susah",
+  "ekstrem",
+  "berat",
+  "expert"
+ ],
+ "menengah": [
+  "intermediate",
+  "sedang"
+ ],
+ "jakarta": [
+  "dki",
+  "jkt"
+ ],
+ "bandung": [
+  "bdg"
+ ],
+ "yogyakarta": [
+  "jogja",
+  "yogya",
+  "jogjakarta",
+  "diy"
+ ],
+ "surabaya": [
+  "sby"
+ ],
+ "denpasar": [
+  "bali"
+ ],
+ "badung": [
+  "bali"
+ ],
+ "tangerang": [
+  "tangsel",
+  "tng"
+ ],
+ "makassar": [
+  "ujung pandang"
+ ],
+ "dangdut": [
+  "koplo"
+ ],
+ "hardcore": [
+  "hc",
+  "punk"
+ ],
+ "rock": [
+  "rok"
+ ],
+ "kpop": [
+  "k pop",
+  "korea",
+  "korean"
+ ],
+ "jazz": [
+  "jaz"
+ ],
+ "indie": [
+  "independen"
+ ],
+ "akustik": [
+  "acoustic",
+  "unplugged"
+ ],
+ "komunitas": [
+  "community",
+  "forum"
+ ],
+ "blog": [
+  "artikel",
+  "tulisan",
+  "panduan"
+ ],
+ "packing": [
+  "perlengkapan",
+  "bawaan",
+  "checklist"
+ ],
+ "_oneway": {
+  "jabodetabek": [
+   "jakarta",
+   "bogor",
+   "depok",
+   "tangerang",
+   "bekasi"
+  ],
+  "jogja": [
+   "sleman",
+   "bantul"
+  ],
+  "yogyakarta": [
+   "sleman",
+   "bantul"
+  ],
+  "bali": [
+   "denpasar",
+   "badung",
+   "gianyar",
+   "ubud",
+   "kuta"
+  ],
+  "jabar": [
+   "bandung",
+   "bogor",
+   "cirebon",
+   "tasikmalaya",
+   "bekasi",
+   "depok",
+   "majalengka"
+  ],
+  "jateng": [
+   "semarang",
+   "solo",
+   "magelang",
+   "wonosobo"
+  ],
+  "jatim": [
+   "surabaya",
+   "malang",
+   "kediri",
+   "gresik",
+   "lamongan"
+  ],
+  "ntb": [
+   "lombok",
+   "mataram"
+  ]
+ },
+ "jawa tengah": [
+  "jateng"
+ ],
+ "jawa barat": [
+  "jabar"
+ ],
+ "jawa timur": [
+  "jatim"
+ ],
+ "nusa tenggara barat": [
+  "ntb",
+  "lombok"
+ ]
+}
